@@ -5,7 +5,6 @@ import com.binance.api.client.domain.market.TickerStatistics;
 import com.example.coinserver.api.binance.BinanceService;
 import com.example.coinserver.api.binance.BinanceUtils;
 import com.example.coinserver.api.binance.CandlestickResponse;
-import com.example.coinserver.auth.annotation.LoginAdmission;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +23,6 @@ public class PricesController {
 
     private final BinanceService binanceService;
 
-    @LoginAdmission
     @GetMapping("/prices")
     public List<TickerPrice> getAllPrices() {
         return binanceService.getAllPrices();
