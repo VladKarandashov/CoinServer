@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="create-table-user" author="karandashov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user"/>
+            </not>
+        </preConditions>
+        
+        <comment>Create table User</comment>
+        
+        <createTable tableName="user">
+            <column name="id" type="INTEGER" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="login" type="varchar(32)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="varchar(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="login_date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="token" type="varchar(64)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+
+        <rollback>
+            <dropTable tableName="user"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index-in-table-user" author="karandashov">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="user"/>
+            <columnExists tableName="user" columnName="login"/>
+            <columnExists tableName="user" columnName="token"/>
+            <not>
+                <indexExists tableName="user" columnNames="login"/>
+                <indexExists tableName="user" columnNames="token"/>
+            </not>
+        </preConditions>
+
+        <comment>Create index for table user</comment>
+
+        <createIndex tableName="user" indexName="idx_login">
+            <column name="login"/>
+        </createIndex>
+        <createIndex tableName="user" indexName="idx_token">
+            <column name="token"/>
+        </createIndex>
+
+        <rollback>
+            <dropIndex tableName="user" indexName="idx_login"/>
+            <dropIndex tableName="user" indexName="idx_token"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="user-sequence-id" author="karandashov">
+        <preConditions>
+            <tableExists tableName="user"/>
+            <columnExists tableName="user" columnName="id"/>
+            <not>
+                <sequenceExists sequenceName="user_seq_id"/>
+            </not>
+        </preConditions>
+
+        <comment>Create sequence for table user</comment>
+
+        <createSequence
+                sequenceName="user_seq_id"
+                incrementBy="1"
+                minValue="1"
+                startValue="1"/>
+
+        <rollback>
+            <dropSequence sequenceName="user_seq_id"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://77.232.137.176:5432/default_db
+    username: gen_user
+    password: verystrongpassword
+  liquibase:
+    enabled: true
+    changeLog: classpath:db/changelog/db.changelog-master.xml
+  jpa:
+    showSql: true
+    hibernate:
+      ddl-auto: none
+    database: postgresql
