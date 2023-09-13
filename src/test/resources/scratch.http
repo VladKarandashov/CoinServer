@@ -1,5 +1,6 @@
 ### получение цен
 GET http://localhost:8080/api/v1/coins/prices
+token: 000
 
 ### получение цен по конкретной монете
 GET http://localhost:8080/api/v1/coins/prices/BTCUSDT?interval=3m
