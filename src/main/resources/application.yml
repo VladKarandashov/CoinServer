@@ -10,7 +10,7 @@ spring:
   jpa:
     showSql: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
     properties:
       hibernate:
         default_schema: public

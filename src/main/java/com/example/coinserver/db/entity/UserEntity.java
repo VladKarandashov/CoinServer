@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -41,4 +42,7 @@ public class UserEntity {
 
     @Column(name = "token")
     private String token;
+
+    @Column(name = "money")
+    private BigDecimal money;
 }
