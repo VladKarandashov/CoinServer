@@ -3,6 +3,7 @@ package com.example.coinserver.business.service;
 import com.example.coinserver.api.binance.BinanceService;
 import com.example.coinserver.auth.service.AuthService;
 import com.example.coinserver.common.request.CreateBuyOrderRequest;
+import com.example.coinserver.common.request.CreateSellAllOrderRequest;
 import com.example.coinserver.common.request.CreateSellOrderRequest;
 import com.example.coinserver.db.entity.OrderEntity;
 import com.example.coinserver.db.repository.OrderRepository;
@@ -76,7 +77,7 @@ public class ManageOrdersService {
 
         // а у пользователя есть столько ресурсов, чтобы их продать?
         var user = authService.getUser();
-        var balance = balanceService.getAssetsBalanceBySymbol(symbol, user);
+        var balance = balanceService.getAssetsBalance(symbol, user);
         var userAssetsCount = balance.getAssetsCount();
         if (assetsCountForSail.compareTo(userAssetsCount) < 0) {
             throw new CoinServerException(1302, "LACK_OF_RESOURCES");
@@ -102,5 +103,14 @@ public class ManageOrdersService {
         user.setMoney(newUsdMoneyBalance);
         orderRepository.save(order);
         userRepository.save(user);
+    }
+
+    @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRES_NEW)
+    public void createSellOrder(CreateSellAllOrderRequest request) {
+        var symbol = request.getAssetsSymbol();
+        var balance = balanceService.getAssetsBalance(symbol);
+        var userAssetsCount = balance.getAssetsCount();
+
+        createSellOrder(new CreateSellOrderRequest(symbol, userAssetsCount));
     }
 }

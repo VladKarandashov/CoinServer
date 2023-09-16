@@ -26,6 +26,12 @@ public class OrdersService {
                 .collect(Collectors.toList());
     }
 
+    public List<OrderEntity> getAllOrders(UserEntity user) {
+        return orderRepository.findAllByUser(user).stream()
+                .sorted(Comparator.comparing(OrderEntity::getDate))
+                .collect(Collectors.toList());
+    }
+
     public List<OrderEntity> getOrdersBySymbol(String symbol) {
         var user = authService.getUser();
         return getOrdersBySymbol(symbol, user);

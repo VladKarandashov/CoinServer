@@ -5,6 +5,7 @@ import com.example.coinserver.business.service.ManageOrdersService;
 import com.example.coinserver.business.service.OrdersService;
 import com.example.coinserver.common.GenericResponse;
 import com.example.coinserver.common.request.CreateBuyOrderRequest;
+import com.example.coinserver.common.request.CreateSellAllOrderRequest;
 import com.example.coinserver.common.request.CreateSellOrderRequest;
 import com.example.coinserver.db.entity.OrderEntity;
 import jakarta.validation.Valid;
@@ -50,6 +51,13 @@ public class OrdersController {
     @PostMapping("/sail")
     @LoginAdmission
     public GenericResponse<?> createSellOrder(@Valid @RequestBody CreateSellOrderRequest request) {
+        manageOrdersService.createSellOrder(request);
+        return new GenericResponse<>(0, "SUCCESS");
+    }
+
+    @PostMapping("/sail/all")
+    @LoginAdmission
+    public GenericResponse<?> createSellAllOrder(@Valid @RequestBody CreateSellAllOrderRequest request) {
         manageOrdersService.createSellOrder(request);
         return new GenericResponse<>(0, "SUCCESS");
     }
