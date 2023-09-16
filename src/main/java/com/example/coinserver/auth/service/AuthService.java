@@ -13,13 +13,13 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static com.example.coinserver.exception.ExceptionBasis.LOGIN_ALREADY_EXIST;
 import static com.example.coinserver.exception.ExceptionBasis.TOKEN_EXPIRED_NEED_LOGIN;
 import static com.example.coinserver.exception.ExceptionBasis.TOKEN_HEADER_NOT_FOUND;
 import static com.example.coinserver.exception.ExceptionBasis.WRONG_LOGIN_OR_PASSWORD;
 import static com.example.coinserver.exception.ExceptionBasis.WRONG_TOKEN;
-import static com.example.coinserver.utils.RandomTokenGenerator.generateToken;
 
 @Slf4j
 @Service
@@ -46,7 +46,7 @@ public class AuthService {
 
     public LoginResponse login(LoginRequest request) {
         var user = getUser(request.getLogin(), request.getPassword());
-        var token = generateToken();
+        var token = UUID.randomUUID().toString();
         user.setLoginDateTime(LocalDateTime.now());
         user.setToken(token);
         userRepository.save(user);
@@ -59,7 +59,7 @@ public class AuthService {
             throw new CoinServerException(LOGIN_ALREADY_EXIST);
         }
 
-        var token = generateToken();
+        var token = UUID.randomUUID().toString();
         var user = UserEntity.builder()
             .login(request.getLogin())
             .password(request.getPassword())

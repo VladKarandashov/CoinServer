@@ -1,4 +1,4 @@
-package com.example.coinserver.auth.Controller;
+package com.example.coinserver.auth.controller;
 
 import com.example.coinserver.auth.service.AuthService;
 import com.example.coinserver.common.GenericResponse;
