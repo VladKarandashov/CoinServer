@@ -29,10 +29,35 @@
             <column name="token" type="varchar(64)">
                 <constraints nullable="false" unique="true"/>
             </column>
+            <column name="money" type="number" defaultValueNumeric="10000">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
 
         <rollback>
             <dropTable tableName="user"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="user-sequence-id" author="karandashov">
+        <preConditions>
+            <tableExists tableName="user"/>
+            <columnExists tableName="user" columnName="id"/>
+            <not>
+                <sequenceExists sequenceName="user_seq_id"/>
+            </not>
+        </preConditions>
+
+        <comment>Create sequence for table user</comment>
+
+        <createSequence
+                sequenceName="user_seq_id"
+                incrementBy="1"
+                minValue="1"
+                startValue="1"/>
+
+        <rollback>
+            <dropSequence sequenceName="user_seq_id"/>
         </rollback>
     </changeSet>
 
@@ -59,28 +84,6 @@
         <rollback>
             <dropIndex tableName="user" indexName="idx_login"/>
             <dropIndex tableName="user" indexName="idx_token"/>
-        </rollback>
-    </changeSet>
-
-    <changeSet id="user-sequence-id" author="karandashov">
-        <preConditions>
-            <tableExists tableName="user"/>
-            <columnExists tableName="user" columnName="id"/>
-            <not>
-                <sequenceExists sequenceName="user_seq_id"/>
-            </not>
-        </preConditions>
-
-        <comment>Create sequence for table user</comment>
-
-        <createSequence
-                sequenceName="user_seq_id"
-                incrementBy="1"
-                minValue="1"
-                startValue="1"/>
-
-        <rollback>
-            <dropSequence sequenceName="user_seq_id"/>
         </rollback>
     </changeSet>
 </databaseChangeLog>

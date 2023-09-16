@@ -44,9 +44,9 @@ public class OrderEntity {
     @Column(name = "assets_count")
     private BigDecimal assetsCount;
 
-    @Column(name = "assets_money")
+    @Column(name = "money")
     // TODO переименовать просто в money
-    private BigDecimal assetsMoney;
+    private BigDecimal money;
 
     @Column(name = "date")
     private LocalDateTime date;

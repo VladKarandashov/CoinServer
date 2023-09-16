@@ -26,7 +26,7 @@
             <column name="assets_count" type="number">
                 <constraints nullable="false"/>
             </column>
-            <column name="assets_money" type="number">
+            <column name="money" type="number">
                 <constraints nullable="false"/>
             </column>
             <column name="date" type="DATETIME">
@@ -43,38 +43,6 @@
 
         <rollback>
             <dropTable tableName="order"/>
-        </rollback>
-    </changeSet>
-
-    <changeSet id="create-index-in-table-order" author="karandashov">
-        <preConditions onFail="MARK_RAN">
-            <tableExists tableName="order"/>
-            <columnExists tableName="order" columnName="user_id"/>
-            <columnExists tableName="order" columnName="assets_symbol"/>
-            <columnExists tableName="order" columnName="date"/>
-            <not>
-                <indexExists tableName="order" columnNames="user_id"/>
-                <indexExists tableName="order" columnNames="assets_symbol"/>
-                <indexExists tableName="order" columnNames="date"/>
-            </not>
-        </preConditions>
-
-        <comment>Create index for table order</comment>
-
-        <createIndex tableName="order" indexName="idx_user_id">
-            <column name="user_id"/>
-        </createIndex>
-        <createIndex tableName="order" indexName="idx_assets_symbol">
-            <column name="assets_symbol"/>
-        </createIndex>
-        <createIndex tableName="order" indexName="idx_date">
-            <column name="date"/>
-        </createIndex>
-
-        <rollback>
-            <dropIndex tableName="order" indexName="idx_login"/>
-            <dropIndex tableName="order" indexName="idx_token"/>
-            <dropIndex tableName="order" indexName="idx_date"/>
         </rollback>
     </changeSet>
 
@@ -97,6 +65,32 @@
 
         <rollback>
             <dropSequence sequenceName="order_seq_id"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index-in-table-order" author="karandashov">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="order"/>
+            <columnExists tableName="order" columnName="user_id"/>
+            <columnExists tableName="order" columnName="assets_symbol"/>
+            <not>
+                <indexExists tableName="order" columnNames="user_id"/>
+                <indexExists tableName="order" columnNames="assets_symbol"/>
+            </not>
+        </preConditions>
+
+        <comment>Create index for table order</comment>
+
+        <createIndex tableName="order" indexName="idx_user_id">
+            <column name="user_id"/>
+        </createIndex>
+        <createIndex tableName="order" indexName="idx_assets_symbol">
+            <column name="assets_symbol"/>
+        </createIndex>
+
+        <rollback>
+            <dropIndex tableName="order" indexName="idx_login"/>
+            <dropIndex tableName="order" indexName="idx_token"/>
         </rollback>
     </changeSet>
 </databaseChangeLog>

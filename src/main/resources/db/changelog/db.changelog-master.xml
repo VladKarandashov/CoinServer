@@ -11,8 +11,7 @@
     </changeSet>
 
     <include file="ddl/2023-09-13--user.xml" relativeToChangelogFile="true"/>
-    <include file="dml/2023-09-13-add-admin-user.xml" relativeToChangelogFile="true"/>
-    <include file="ddl/2023-09-13--add-user-money.xml" relativeToChangelogFile="true"/>
     <include file="ddl/2023-09-13--order.xml" relativeToChangelogFile="true"/>
+    <include file="dml/2023-09-13-add-admin-user.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

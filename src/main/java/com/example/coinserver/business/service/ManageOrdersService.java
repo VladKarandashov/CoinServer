@@ -56,7 +56,7 @@ public class ManageOrdersService {
                 .user(user)
                 .assetsSymbol(symbol)
                 .assetsCount(orderAssetsCount)
-                .assetsMoney(usdMoneyForCreateOrder.negate())
+                .money(usdMoneyForCreateOrder.negate())
                 .date(LocalDateTime.now())
                 .build();
         user.setMoney(newUsdMoneyBalance);
@@ -96,7 +96,7 @@ public class ManageOrdersService {
                 .user(user)
                 .assetsSymbol(symbol)
                 .assetsCount(assetsCountForSail.negate())
-                .assetsMoney(orderUsdMoneyPrice)
+                .money(orderUsdMoneyPrice)
                 .date(LocalDateTime.now())
                 .build();
         user.setMoney(newUsdMoneyBalance);
