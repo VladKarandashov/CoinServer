@@ -6,12 +6,17 @@ import com.binance.api.client.domain.market.TickerPrice;
 import com.binance.api.client.domain.market.TickerStatistics;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.example.coinserver.api.cache.CacheConfig.CANDLESTICK_BARS_BY_SYMBOL_CACHE;
+import static com.example.coinserver.api.cache.CacheConfig.PRICES_CACHE;
+import static com.example.coinserver.api.cache.CacheConfig.TICKER_STATISTICS_BY_SYMBOL_CACHE;
 
 @Slf4j
 @Service
@@ -23,7 +28,9 @@ public class BinanceService {
 
     private final BinanceApiRestClient binanceClient;
 
+    @Cacheable(PRICES_CACHE)
     public List<TickerPrice> getAllPrices() {
+        log.info("запрошена цена всех монет");
         return binanceClient.getAllPrices().stream()
                 .filter(this::isTickerSymbolNeed)
                 .filter(this::isTickerSymbolNotWrong)
@@ -37,11 +44,13 @@ public class BinanceService {
                 .findFirst();
     }
 
+    @Cacheable(TICKER_STATISTICS_BY_SYMBOL_CACHE)
     public TickerStatistics getTickerStatisticsBySymbol(String symbol) {
         symbol += mainCurrency;
         return binanceClient.get24HrPriceStatistics(symbol);
     }
 
+    @Cacheable(CANDLESTICK_BARS_BY_SYMBOL_CACHE)
     public List<CandlestickResponse> getCandlestickBarsBySymbol(CandlestickInterval interval, String symbol) {
         symbol += mainCurrency;
         return binanceClient.getCandlestickBars(symbol, interval).stream()
