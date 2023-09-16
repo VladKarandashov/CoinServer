@@ -1,6 +1,7 @@
 package com.example.coinserver.business.controller;
 
 import com.example.coinserver.auth.annotation.LoginAdmission;
+import com.example.coinserver.business.service.ManageOrdersService;
 import com.example.coinserver.business.service.OrdersService;
 import com.example.coinserver.common.GenericResponse;
 import com.example.coinserver.common.request.CreateBuyOrderRequest;
@@ -25,30 +26,31 @@ import java.util.List;
 public class OrdersController {
 
     private final OrdersService ordersService;
+    private final ManageOrdersService manageOrdersService;
 
     @GetMapping
     @LoginAdmission
-    public List<OrderEntity> getAllOrders() {
-        return ordersService.getAllOrders();
+    public GenericResponse<List<OrderEntity>> getAllOrders() {
+        return new GenericResponse<>(0, "SUCCESS", ordersService.getAllOrders());
     }
 
     @GetMapping("/{symbol}")
     @LoginAdmission
-    public List<OrderEntity> getOrdersBySymbol(@PathVariable String symbol) {
-        return ordersService.getOrdersBySymbol(symbol);
+    public GenericResponse<List<OrderEntity>> getOrdersBySymbol(@PathVariable String symbol) {
+        return new GenericResponse<>(0, "SUCCESS", ordersService.getOrdersBySymbol(symbol));
     }
 
     @PostMapping("/create")
     @LoginAdmission
     public GenericResponse<?> createBuyOrder(@Valid @RequestBody CreateBuyOrderRequest request) {
-        ordersService.createBuyOrder(request);
+        manageOrdersService.createBuyOrder(request);
         return new GenericResponse<>(0, "SUCCESS");
     }
 
     @PostMapping("/sail")
     @LoginAdmission
     public GenericResponse<?> createSellOrder(@Valid @RequestBody CreateSellOrderRequest request) {
-        ordersService.createSellOrder(request);
+        manageOrdersService.createSellOrder(request);
         return new GenericResponse<>(0, "SUCCESS");
     }
 }

@@ -45,6 +45,7 @@ public class OrderEntity {
     private BigDecimal assetsCount;
 
     @Column(name = "assets_money")
+    // TODO переименовать просто в money
     private BigDecimal assetsMoney;
 
     @Column(name = "date")
