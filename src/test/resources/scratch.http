@@ -1,10 +1,19 @@
 ### получение цен
 GET http://localhost:8080/api/v1/coins/prices
-token: 000
 
 ### получение цен по конкретной монете
-GET http://localhost:8080/api/v1/coins/prices/BTCUSDT?interval=3m
+GET http://localhost:8080/api/v1/coins/prices/USDTRUB?interval=3m
 
 ### получение статистики по монете
-GET http://localhost:8080/api/v1/coins/statistics/BTCUSDT
+GET http://localhost:8080/api/v1/coins/statistics/USDTRUB
+
+### создание заказа на покупку
+POST http://localhost:8080/api/v1/orders/create
+content-type: application/json
+token: 000
+
+{
+  "assetsSymbol": "RUBUSDT",
+  "usdMoney": 5
+}
 

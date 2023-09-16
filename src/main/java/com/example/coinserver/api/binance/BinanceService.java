@@ -1,7 +1,6 @@
 package com.example.coinserver.api.binance;
 
 import com.binance.api.client.BinanceApiRestClient;
-import com.binance.api.client.domain.market.Candlestick;
 import com.binance.api.client.domain.market.CandlestickInterval;
 import com.binance.api.client.domain.market.TickerPrice;
 import com.binance.api.client.domain.market.TickerStatistics;
@@ -10,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BinanceService {
 
-    public static final Set<String> needSymbolSubstrings = Set.of("RUB", "USD");
+    public static final Set<String> needSymbolSubstrings = Set.of("USD");
 
     private final BinanceApiRestClient binanceClient;
 
@@ -26,6 +26,12 @@ public class BinanceService {
         return binanceClient.getAllPrices().stream()
                 .filter(this::isPriceNeed)
                 .collect(Collectors.toList());
+    }
+
+    public Optional<TickerPrice> getPriceBySymbol(String symbol) {
+        return binanceClient.getAllPrices().stream()
+                .filter(price -> symbol.equalsIgnoreCase(price.getSymbol()))
+                .findFirst();
     }
 
     public TickerStatistics getTickerStatisticsBySymbol(String symbol) {
@@ -38,7 +44,7 @@ public class BinanceService {
                 .collect(Collectors.toList());
     }
 
-    private boolean isPriceNeed(TickerPrice price) {;
+    private boolean isPriceNeed(TickerPrice price) {
         var symbol = price.getSymbol();
         return needSymbolSubstrings.stream().anyMatch(symbol::contains);
     }

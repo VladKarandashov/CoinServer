@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="create-table-order" author="karandashov">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="order"/>
+            </not>
+        </preConditions>
+        
+        <comment>Create table Order</comment>
+        
+        <createTable tableName="order">
+            <column name="id" type="INTEGER" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="user_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="assets_symbol" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="assets_count" type="number">
+                <constraints nullable="false"/>
+            </column>
+            <column name="assets_money" type="number">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="order"
+                baseColumnNames="user_id"
+                constraintName="fk_order_user_id"
+                referencedTableName="user"
+                referencedColumnNames="id"/>
+
+        <rollback>
+            <dropTable tableName="order"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="create-index-in-table-order" author="karandashov">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="order"/>
+            <columnExists tableName="order" columnName="user_id"/>
+            <columnExists tableName="order" columnName="assets_symbol"/>
+            <columnExists tableName="order" columnName="date"/>
+            <not>
+                <indexExists tableName="order" columnNames="user_id"/>
+                <indexExists tableName="order" columnNames="assets_symbol"/>
+                <indexExists tableName="order" columnNames="date"/>
+            </not>
+        </preConditions>
+
+        <comment>Create index for table order</comment>
+
+        <createIndex tableName="order" indexName="idx_user_id">
+            <column name="user_id"/>
+        </createIndex>
+        <createIndex tableName="order" indexName="idx_assets_symbol">
+            <column name="assets_symbol"/>
+        </createIndex>
+        <createIndex tableName="order" indexName="idx_date">
+            <column name="date"/>
+        </createIndex>
+
+        <rollback>
+            <dropIndex tableName="order" indexName="idx_login"/>
+            <dropIndex tableName="order" indexName="idx_token"/>
+            <dropIndex tableName="order" indexName="idx_date"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="order-sequence-id" author="karandashov">
+        <preConditions>
+            <tableExists tableName="order"/>
+            <columnExists tableName="order" columnName="id"/>
+            <not>
+                <sequenceExists sequenceName="order_seq_id"/>
+            </not>
+        </preConditions>
+
+        <comment>Create sequence for table order</comment>
+
+        <createSequence
+                sequenceName="order_seq_id"
+                incrementBy="1"
+                minValue="1"
+                startValue="1"/>
+
+        <rollback>
+            <dropSequence sequenceName="order_seq_id"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
