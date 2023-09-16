@@ -18,34 +18,51 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BinanceService {
 
-    public static final Set<String> needSymbolSubstrings = Set.of("USD");
+    public static final String mainCurrency = "USDT";
+    public static final Set<String> wrongSymbolEndSubstrings = Set.of("USD", "BUSD");
 
     private final BinanceApiRestClient binanceClient;
 
     public List<TickerPrice> getAllPrices() {
         return binanceClient.getAllPrices().stream()
-                .filter(this::isPriceNeed)
+                .filter(this::isTickerSymbolNeed)
+                .filter(this::isTickerSymbolNotWrong)
+                .map(this::remakeToCorrectFormat)
                 .collect(Collectors.toList());
     }
 
     public Optional<TickerPrice> getPriceBySymbol(String symbol) {
-        return binanceClient.getAllPrices().stream()
+        return getAllPrices().stream()
                 .filter(price -> symbol.equalsIgnoreCase(price.getSymbol()))
                 .findFirst();
     }
 
     public TickerStatistics getTickerStatisticsBySymbol(String symbol) {
+        symbol += mainCurrency;
         return binanceClient.get24HrPriceStatistics(symbol);
     }
 
     public List<CandlestickResponse> getCandlestickBarsBySymbol(CandlestickInterval interval, String symbol) {
+        symbol += mainCurrency;
         return binanceClient.getCandlestickBars(symbol, interval).stream()
                 .map(CandlestickResponse::new)
                 .collect(Collectors.toList());
     }
 
-    private boolean isPriceNeed(TickerPrice price) {
-        var symbol = price.getSymbol();
-        return needSymbolSubstrings.stream().anyMatch(symbol::contains);
+    private boolean isTickerSymbolNeed(TickerPrice ticker) {
+        var symbol = ticker.getSymbol();
+        return symbol.endsWith(mainCurrency);
+    }
+
+    private boolean isTickerSymbolNotWrong(TickerPrice ticker) {
+        var symbol = ticker.getSymbol();
+        return wrongSymbolEndSubstrings.stream().noneMatch(symbol::endsWith);
+    }
+
+    private TickerPrice remakeToCorrectFormat(TickerPrice ticker) {
+        var currencySymbol = ticker.getSymbol();
+        var rightSymbol = currencySymbol.substring(0, currencySymbol.length()-mainCurrency.length());
+        ticker.setSymbol(rightSymbol);
+        return ticker;
     }
 }

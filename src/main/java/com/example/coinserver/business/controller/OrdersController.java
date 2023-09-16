@@ -1,8 +1,10 @@
 package com.example.coinserver.business.controller;
 
+import com.example.coinserver.auth.annotation.LoginAdmission;
 import com.example.coinserver.business.service.OrdersService;
 import com.example.coinserver.common.GenericResponse;
-import com.example.coinserver.common.request.CreateOrderRequest;
+import com.example.coinserver.common.request.CreateBuyOrderRequest;
+import com.example.coinserver.common.request.CreateSellOrderRequest;
 import com.example.coinserver.db.entity.OrderEntity;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,20 +27,28 @@ public class OrdersController {
     private final OrdersService ordersService;
 
     @GetMapping
+    @LoginAdmission
     public List<OrderEntity> getAllOrders() {
         return ordersService.getAllOrders();
     }
 
     @GetMapping("/{symbol}")
+    @LoginAdmission
     public List<OrderEntity> getOrdersBySymbol(@PathVariable String symbol) {
         return ordersService.getOrdersBySymbol(symbol);
     }
 
     @PostMapping("/create")
-    public GenericResponse<?> createOrder(@Valid @RequestBody CreateOrderRequest request) {
-        ordersService.createOrder(request);
+    @LoginAdmission
+    public GenericResponse<?> createBuyOrder(@Valid @RequestBody CreateBuyOrderRequest request) {
+        ordersService.createBuyOrder(request);
         return new GenericResponse<>(0, "SUCCESS");
     }
 
-
+    @PostMapping("/sail")
+    @LoginAdmission
+    public GenericResponse<?> createSellOrder(@Valid @RequestBody CreateSellOrderRequest request) {
+        ordersService.createSellOrder(request);
+        return new GenericResponse<>(0, "SUCCESS");
+    }
 }
