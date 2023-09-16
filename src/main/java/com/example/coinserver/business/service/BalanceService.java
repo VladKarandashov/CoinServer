@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.example.coinserver.exception.ExceptionBasis.NOT_FOUND;
 import static java.util.stream.Collectors.groupingBy;
 
 @Slf4j
@@ -67,7 +68,7 @@ public class BalanceService {
                 .map(OrderEntity::getMoney)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         var tickerPrice = binanceService.getPriceBySymbol(symbol)
-                .orElseThrow(() -> new CoinServerException(1301, "NOT_FOUND"));
+                .orElseThrow(() -> new CoinServerException(NOT_FOUND));
         var price = new BigDecimal(tickerPrice.getPrice());
         var usdAssetsCost = assetsCount.multiply(price);
         return new AssetsBalance(symbol, assetsCount, new ChangeCost(spentUsdMoney, usdAssetsCost));

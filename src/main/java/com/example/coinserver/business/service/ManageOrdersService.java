@@ -20,6 +20,11 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
+import static com.example.coinserver.exception.ExceptionBasis.LACK_OF_RESOURCES;
+import static com.example.coinserver.exception.ExceptionBasis.NOT_FOUND;
+import static com.example.coinserver.exception.ExceptionBasis.VALIDATION_ERROR_ASSETS;
+import static com.example.coinserver.exception.ExceptionBasis.VALIDATION_ERROR_USD;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -38,13 +43,13 @@ public class ManageOrdersService {
         var usdMoneyForCreateOrder = request.getUsdMoney();
 
         // дополнительная валидация запроса
-        if (usdMoneyForCreateOrder.compareTo(BigDecimal.ZERO) < 0) {
-            throw new CoinServerException(1201, "VALIDATION_ERROR");
+        if (usdMoneyForCreateOrder.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new CoinServerException(VALIDATION_ERROR_USD);
         }
 
         // по какой цене покупаем?
         var tickerPrice = binanceService.getPriceBySymbol(symbol)
-                .orElseThrow(() -> new CoinServerException(1301, "NOT_FOUND"));
+                .orElseThrow(() -> new CoinServerException(NOT_FOUND));
         var assetsPriceForBuy = new BigDecimal(tickerPrice.getPrice());
 
         // сколько пользователь получит ресурсов после покупки?
@@ -71,8 +76,8 @@ public class ManageOrdersService {
         var assetsCountForSail = request.getAssetsCount();
 
         // дополнительная валидация запроса
-        if (assetsCountForSail.compareTo(BigDecimal.ZERO) < 0) {
-            throw new CoinServerException(1201, "VALIDATION_ERROR");
+        if (assetsCountForSail.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new CoinServerException(VALIDATION_ERROR_ASSETS);
         }
 
         // а у пользователя есть столько ресурсов, чтобы их продать?
@@ -80,12 +85,12 @@ public class ManageOrdersService {
         var balance = balanceService.getAssetsBalance(symbol, user);
         var userAssetsCount = balance.getAssetsCount();
         if (assetsCountForSail.compareTo(userAssetsCount) < 0) {
-            throw new CoinServerException(1302, "LACK_OF_RESOURCES");
+            throw new CoinServerException(LACK_OF_RESOURCES);
         }
 
         // по какой цене продаём?
         var tickerPrice = binanceService.getPriceBySymbol(symbol)
-                .orElseThrow(() -> new CoinServerException(1301, "NOT_FOUND"));
+                .orElseThrow(() -> new CoinServerException(NOT_FOUND));
         var assetsPriceForSail = new BigDecimal(tickerPrice.getPrice());
 
         // сколько пользователь получит денег после продажи?
