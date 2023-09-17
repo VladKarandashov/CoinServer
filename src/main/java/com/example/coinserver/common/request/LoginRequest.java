@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LoginRequest {
     @NotBlank
-    @Pattern(regexp = "^a-zA-Z0-9{1,32}$")
+    @Pattern(regexp = "^[a-zA-Z0-9]{1,32}$")
     private String login;
     @NotBlank
-    @Pattern(regexp = "^a-zA-Z0-9{1,32}$")
+    @Pattern(regexp = "^[a-zA-Z0-9]{1,32}$")
     private String password;
 }

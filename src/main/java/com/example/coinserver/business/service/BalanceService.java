@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,7 +39,11 @@ public class BalanceService {
         var assetsBalanceList = getAssetsBalance(user);
         var assetsUsdCost = getUsdAssetsCost(assetsBalanceList);
 
-        return new BalanceInfo(user.getMoney(), assetsBalanceList, new ChangeCost(spentUsd, assetsUsdCost));
+        return new BalanceInfo(user.getMoney(), assetsBalanceList, new ChangeCost(
+                spentUsd,
+                assetsUsdCost,
+                getChangeCostPercent(spentUsd, assetsUsdCost)
+        ));
     }
 
     public BigDecimal getUsdBalance() {
@@ -71,7 +76,11 @@ public class BalanceService {
                 .orElseThrow(() -> new CoinServerException(NOT_FOUND));
         var price = new BigDecimal(tickerPrice.getPrice());
         var usdAssetsCost = assetsCount.multiply(price);
-        return new AssetsBalance(symbol, assetsCount, new ChangeCost(spentUsdMoney, usdAssetsCost));
+        return new AssetsBalance(symbol, assetsCount, new ChangeCost(
+                spentUsdMoney,
+                usdAssetsCost,
+                getChangeCostPercent(spentUsdMoney, usdAssetsCost)
+        ));
     }
 
     public List<AssetsBalance> getAssetsBalance(UserEntity user) {
@@ -106,5 +115,15 @@ public class BalanceService {
                 .map(AssetsBalance::getChangeCost)
                 .map(ChangeCost::getCostUsd)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal getChangeCostPercent(BigDecimal spentUsd, BigDecimal costUsd) {
+        if (spentUsd.compareTo(BigDecimal.ZERO) == 0) {
+            return BigDecimal.ZERO;
+        }
+        return costUsd
+                .divide(spentUsd, 32, RoundingMode.FLOOR)
+                .subtract(BigDecimal.ONE)
+                .multiply(BigDecimal.TEN.multiply(BigDecimal.TEN));
     }
 }

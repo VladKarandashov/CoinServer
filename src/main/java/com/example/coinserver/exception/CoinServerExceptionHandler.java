@@ -1,12 +1,15 @@
 package com.example.coinserver.exception;
 
 import com.example.coinserver.common.GenericResponse;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -26,7 +29,7 @@ public class CoinServerExceptionHandler {
         return new ResponseEntity<>(response, OK);
     }
 
-    @ExceptionHandler(ValidationException.class)
+    @ExceptionHandler({ValidationException.class, MethodArgumentNotValidException.class, ConstraintViolationException.class, DataIntegrityViolationException.class})
     ResponseEntity<GenericResponse<?>> handleException(ValidationException e) {
         log.error("Validation error", e);
         var response = new GenericResponse<>(1200, "VALIDATION_ERROR");
@@ -39,5 +42,4 @@ public class CoinServerExceptionHandler {
         var response = new GenericResponse<>(1000, "UNKNOWN_SERVER_ERROR");
         return new ResponseEntity<>(response, OK);
     }
-
 }
