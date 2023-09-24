@@ -84,7 +84,7 @@ public class ManageOrdersService {
         var user = authService.getUser();
         var balance = balanceService.getAssetsBalance(symbol, user);
         var userAssetsCount = balance.getAssetsCount();
-        if (assetsCountForSail.compareTo(userAssetsCount) < 0) {
+        if (assetsCountForSail.compareTo(userAssetsCount) > 0) {
             throw new CoinServerException(LACK_OF_RESOURCES);
         }
 

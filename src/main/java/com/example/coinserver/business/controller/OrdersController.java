@@ -7,7 +7,7 @@ import com.example.coinserver.common.GenericResponse;
 import com.example.coinserver.common.request.CreateBuyOrderRequest;
 import com.example.coinserver.common.request.CreateSellAllOrderRequest;
 import com.example.coinserver.common.request.CreateSellOrderRequest;
-import com.example.coinserver.db.entity.OrderEntity;
+import com.example.coinserver.common.response.OrderResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -31,14 +32,18 @@ public class OrdersController {
 
     @GetMapping
     @LoginAdmission
-    public GenericResponse<List<OrderEntity>> getAllOrders() {
-        return new GenericResponse<>(0, "SUCCESS", ordersService.getAllOrders());
+    public GenericResponse<List<OrderResponse>> getAllOrders() {
+        return new GenericResponse<>(0, "SUCCESS", ordersService.getAllOrders().stream()
+                .map(OrderResponse::new)
+                .collect(Collectors.toList()));
     }
 
     @GetMapping("/{symbol}")
     @LoginAdmission
-    public GenericResponse<List<OrderEntity>> getOrdersBySymbol(@PathVariable String symbol) {
-        return new GenericResponse<>(0, "SUCCESS", ordersService.getOrdersBySymbol(symbol));
+    public GenericResponse<List<OrderResponse>> getOrdersBySymbol(@PathVariable String symbol) {
+        return new GenericResponse<>(0, "SUCCESS", ordersService.getOrdersBySymbol(symbol).stream()
+                .map(OrderResponse::new)
+                .collect(Collectors.toList()));
     }
 
     @PostMapping("/create")

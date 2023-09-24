@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -54,16 +55,17 @@ public class AuthService {
     }
 
     public LoginResponse registration(LoginRequest request) {
-        var existUser = userRepository.findUserEntityByLogin(request.getLogin());
-        if (existUser.isEmpty()) {
-            throw new CoinServerException(LOGIN_ALREADY_EXIST);
-        }
+        userRepository.findUserEntityByLogin(request.getLogin())
+                .ifPresent(user -> {
+                    throw new CoinServerException(LOGIN_ALREADY_EXIST);
+                });
 
         var token = UUID.randomUUID().toString();
         var user = UserEntity.builder()
             .login(request.getLogin())
             .password(request.getPassword())
             .loginDateTime(LocalDateTime.now())
+            .money(new BigDecimal(100000))
             .token(token)
             .build();
         userRepository.save(user);

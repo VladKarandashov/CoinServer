@@ -21,9 +21,7 @@ public class OrdersService {
 
     public List<OrderEntity> getAllOrders() {
         var user = authService.getUser();
-        return orderRepository.findAllByUser(user).stream()
-                .sorted(Comparator.comparing(OrderEntity::getDate))
-                .collect(Collectors.toList());
+        return getAllOrders(user);
     }
 
     public List<OrderEntity> getAllOrders(UserEntity user) {
