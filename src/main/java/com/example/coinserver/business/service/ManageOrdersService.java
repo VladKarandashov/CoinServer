@@ -20,10 +20,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 
-import static com.example.coinserver.exception.ExceptionBasis.LACK_OF_RESOURCES;
-import static com.example.coinserver.exception.ExceptionBasis.NOT_FOUND;
-import static com.example.coinserver.exception.ExceptionBasis.VALIDATION_ERROR_ASSETS;
-import static com.example.coinserver.exception.ExceptionBasis.VALIDATION_ERROR_USD;
+import static com.example.coinserver.exception.ExceptionBasis.*;
 
 @Slf4j
 @Service
@@ -48,8 +45,7 @@ public class ManageOrdersService {
         }
 
         // по какой цене покупаем?
-        var tickerPrice = binanceService.getPriceBySymbol(symbol)
-                .orElseThrow(() -> new CoinServerException(NOT_FOUND));
+        var tickerPrice = binanceService.getPriceBySymbol(symbol).orElseThrow(() -> new CoinServerException(NOT_FOUND));
         var assetsPriceForBuy = new BigDecimal(tickerPrice.getPrice());
 
         // сколько пользователь получит ресурсов после покупки?
@@ -58,13 +54,7 @@ public class ManageOrdersService {
         var user = authService.getUser();
         var newUsdMoneyBalance = user.getMoney().subtract(usdMoneyForCreateOrder);
 
-        var order = OrderEntity.builder()
-                .user(user)
-                .assetsSymbol(symbol)
-                .assetsCount(orderAssetsCount)
-                .money(usdMoneyForCreateOrder.negate())
-                .date(LocalDateTime.now())
-                .build();
+        var order = OrderEntity.builder().user(user).assetsSymbol(symbol).assetsCount(orderAssetsCount).money(usdMoneyForCreateOrder.negate()).date(LocalDateTime.now()).build();
         user.setMoney(newUsdMoneyBalance);
         orderRepository.save(order);
         userRepository.save(user);
@@ -89,8 +79,7 @@ public class ManageOrdersService {
         }
 
         // по какой цене продаём?
-        var tickerPrice = binanceService.getPriceBySymbol(symbol)
-                .orElseThrow(() -> new CoinServerException(NOT_FOUND));
+        var tickerPrice = binanceService.getPriceBySymbol(symbol).orElseThrow(() -> new CoinServerException(NOT_FOUND));
         var assetsPriceForSail = new BigDecimal(tickerPrice.getPrice());
 
         // сколько пользователь получит денег после продажи?
@@ -98,13 +87,7 @@ public class ManageOrdersService {
         // какой у пользователя новый баланс?
         var newUsdMoneyBalance = user.getMoney().add(orderUsdMoneyPrice);
 
-        var order = OrderEntity.builder()
-                .user(user)
-                .assetsSymbol(symbol)
-                .assetsCount(assetsCountForSail.negate())
-                .money(orderUsdMoneyPrice)
-                .date(LocalDateTime.now())
-                .build();
+        var order = OrderEntity.builder().user(user).assetsSymbol(symbol).assetsCount(assetsCountForSail.negate()).money(orderUsdMoneyPrice).date(LocalDateTime.now()).build();
         user.setMoney(newUsdMoneyBalance);
         orderRepository.save(order);
         userRepository.save(user);
