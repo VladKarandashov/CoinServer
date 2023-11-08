@@ -66,7 +66,7 @@ public class ManageOrdersService {
         var assetsCountForSail = request.getAssetsCount();
 
         // дополнительная валидация запроса
-        if (assetsCountForSail.compareTo(BigDecimal.ZERO) <= 0) {
+        if (assetsCountForSail.compareTo(BigDecimal.ZERO) < 0) {
             throw new CoinServerException(VALIDATION_ERROR_ASSETS);
         }
 

@@ -269,9 +269,41 @@ Connection: keep-alive
 ```
 
 #### GET /api/v1/balance/assets
-возвращает баланс по каждой монете, которую купил пользователь
+возвращает баланс по каждой монете, которую купил пользователь - то есть кол-во всех ресурсов, агрегированное по монетам
 
-// TODO response (можешь сам дёрнуть и посмотреть)
+```http request
+HTTP/1.1 200 
+Content-Type: application/json
+Transfer-Encoding: chunked
+Date: Wed, 08 Nov 2023 16:07:07 GMT
+Keep-Alive: timeout=60
+Connection: keep-alive
+
+{
+  "statusCode": 0,
+  "message": "SUCCESS",
+  "data": [
+    {
+      "assetsSymbol": "BTC",
+      "assetsCount": 0.00014205558407716004749202286867,
+      "changeCost": {
+        "spentUsd": -5,
+        "costUsd": 5.0011421268959803667818358636477451000000,
+        "percent": -200.02284253791960733563671727295500
+      }
+    },
+    {
+      "assetsSymbol": "ETH",
+      "assetsCount": 0E-32,
+      "changeCost": {
+        "spentUsd": 0.0508422455847568747975744093043560000000,
+        "costUsd": 0E-40,
+        "percent": -100.00000000000000000000000000000000
+      }
+    }
+  ]
+}
+```
 
 #### GET /api/v1/balance/assets/{symbol}
 то же самое что и предыдущая, но по конкретной монете (чтобы всё не запрашивать)
@@ -280,10 +312,10 @@ Connection: keep-alive
 полная инфа о пользователе = /api/v1/balance + /api/v1/balance/assets
 
 ```http request
-HTTP/1.1 200 
+HTTP/1.1 200
 Content-Type: application/json
 Transfer-Encoding: chunked
-Date: Mon, 06 Nov 2023 12:44:03 GMT
+Date: Wed, 08 Nov 2023 16:17:17 GMT
 Keep-Alive: timeout=60
 Connection: keep-alive
 
@@ -291,12 +323,31 @@ Connection: keep-alive
   "statusCode": 0,
   "message": "SUCCESS",
   "data": {
-    "usdMoney": 10000,
-    "assets": [],
+    "usdMoney": 99945.0508422455847568747975744093043560000000,
+    "assets": [
+      {
+        "assetsSymbol": "BTC",
+        "assetsCount": 0.00014205558407716004749202286867,
+        "changeCost": {
+          "spentUsd": -5,
+          "costUsd": 5.0010057535352662931362435216938219000000,
+          "percent": -200.02011507070532586272487043387700
+        }
+      },
+      {
+        "assetsSymbol": "ETH",
+        "assetsCount": 0.02648487448817980051592535502974,
+        "changeCost": {
+          "spentUsd": -49.9491577544152431252024255906956440000000,
+          "costUsd": 50.0259551769984162045056068479243990000000,
+          "percent": -200.15375118627777981025342596293800
+        }
+      }
+    ],
     "changeCost": {
-      "spentUsd": 0,
-      "costUsd": 0,
-      "percent": 0
+      "spentUsd": -54.9491577544152431252024255906956440000000,
+      "costUsd": 55.0269609305336824976418503696182209000000,
+      "percent": -200.14159120776002754359398544096400
     }
   }
 }
@@ -305,4 +356,143 @@ Connection: keep-alive
 
 ### Покупка/продажа активов
 
-TODO
+#### GET /api/v1/orders
+Возвращает все заказы (покупки пользователя) - скорее всего будет вызываться редко (для целей вывода на экран лучше использовать апишки balance,
+так как они уже агрегированны).
+По этим данным можно посмотреть всю историю заказов
+
+```http request
+HTTP/1.1 200
+Content-Type: application/json
+Transfer-Encoding: chunked
+Date: Wed, 08 Nov 2023 15:47:20 GMT
+Keep-Alive: timeout=60
+Connection: keep-alive
+
+{
+  "statusCode": 0,
+  "message": "SUCCESS",
+  "data": [
+    {
+      "id": 4,
+      "assetsSymbol": "ETH",
+      "assetsCount": 0.02652477679400327846241173880521,
+      "money": -50,
+      "date": "2023-11-08T18:45:57.245408"
+    },
+    {
+      "id": 5,
+      "assetsSymbol": "ETH",
+      "assetsCount": 0.02652491750750655165462435411825,
+      "money": -50,
+      "date": "2023-11-08T18:46:04.899635"
+    },
+    {
+      "id": 6,
+      "assetsSymbol": "ETH",
+      "assetsCount": -0.05304969430150983011703609292346,
+      "money": 100.0527844465335697973324119755040292000000,
+      "date": "2023-11-08T18:47:10.695216"
+    }
+  ]
+}
+```
+money - это доллары
+* отрицательное - если мы покупали монеты и "теряли" доллары
+* положительное - если мы продавали монеты и "приобретали" доллары
+
+assetsCount - это количество монет
+* отрицательное - если мы продавали монеты и "приобретали" доллары
+* положительное - если мы покупали монеты и "теряли" доллары
+
+#### GET /api/v1/orders/{symbol}
+Абсолютно тоже самое, что и предыдущая. Только отфильтровал заказы на конкретную монету.
+
+#### POST /api/v1/orders/create
+Позволяет создать заказ НА ПОКУПКУ монеты в некотором количестве.
+Пример запроса:
+```http request
+content-type: application/json
+token: {{token}}
+
+{
+  "assetsSymbol": "ETH",
+  "usdMoney": 50
+}
+```
+
+Ответ не несёт ценной информации:
+```http request
+HTTP/1.1 200 
+Content-Type: application/json
+Transfer-Encoding: chunked
+Date: Wed, 08 Nov 2023 16:11:09 GMT
+Keep-Alive: timeout=60
+Connection: keep-alive
+
+{
+  "statusCode": 0,
+  "message": "SUCCESS",
+  "data": null
+}
+```
+Коды возможных ошибок смотри в начале!
+
+#### POST /api/v1/orders/sail
+Позволяет создать заказ НА ПРОДАЖУ монеты в некотором количестве.
+Пример запроса:
+```http request
+content-type: application/json
+token: {{token}}
+
+{
+  "assetsSymbol": "ETH",
+  "assetsCount": 0.00002
+}
+```
+
+Ответ не несёт ценной информации:
+```http request
+HTTP/1.1 200 
+Content-Type: application/json
+Transfer-Encoding: chunked
+Date: Wed, 08 Nov 2023 16:11:09 GMT
+Keep-Alive: timeout=60
+Connection: keep-alive
+
+{
+  "statusCode": 0,
+  "message": "SUCCESS",
+  "data": null
+}
+```
+Коды возможных ошибок смотри в начале!
+
+#### POST /api/v1/orders/sail/all
+Позволяет создать заказ НА ПРОДАЖУ всех монет, которые есть у пользователя (в рамках одной монеты конечно)
+Пример запроса:
+```http request
+content-type: application/json
+token: {{token}}
+
+{
+  "assetsSymbol": "ETH"
+}
+```
+
+Ответ не несёт ценной информации:
+```http request
+HTTP/1.1 200 
+Content-Type: application/json
+Transfer-Encoding: chunked
+Date: Wed, 08 Nov 2023 16:11:09 GMT
+Keep-Alive: timeout=60
+Connection: keep-alive
+
+{
+  "statusCode": 0,
+  "message": "SUCCESS",
+  "data": null
+}
+```
+Коды возможных ошибок смотри в начале!

@@ -1,41 +1,53 @@
 ### получение цен
-GET http://89.191.229.11:8080/api/v1/coins/prices
+GET http://localhost:8080/api/v1/coins/prices
 
 ### получение цен по конкретной монете
-GET http://89.191.229.11:8080/api/v1/coins/prices/ETH?interval=3m
+GET http://localhost:8080/api/v1/coins/prices/ETH?interval=3m
 
 ### получение статистики по монете
-GET http://89.191.229.11:8080/api/v1/statistics/leaderboard
-
-### получение статистики по монете
-GET http://89.191.229.11:8080/api/v1/balance/info
-token: 000
+GET http://localhost:8080/api/v1/statistics/leaderboard
 
 ### регистрация
 POST http://localhost:8080/api/v1/auth/registration
 content-type: application/json
 
 {
-  "login": "testLogin123",
+  "login": "vlad",
   "password": "qwerty123"
 }
+
+###
+GET http://localhost:8080/api/v1/balance/assets
+token: {{token}}
+
+### получение статистики по монете
+GET http://localhost:8080/api/v1/balance/info
+token: {{token}}
+
+### получение всех заказов
+GET http://localhost:8080/api/v1/orders
+token: {{token}}
+
+### получение всех заказов по конкретной монете
+GET http://localhost:8080/api/v1/orders/ETH
+token: {{token}}
 
 ### создание заказа на покупку
 POST http://localhost:8080/api/v1/orders/create
 content-type: application/json
-token: 14c42671-3503-4126-953c-ad1f2f7985d3
+token: {{token}}
 
 {
-  "assetsSymbol": "BTC",
-  "usdMoney": 5
+  "assetsSymbol": "ETH",
+  "usdMoney": 50
 }
 
 ### создание заказа на продажу
 POST http://localhost:8080/api/v1/orders/sail/all
 content-type: application/json
-token: 14c42671-3503-4126-953c-ad1f2f7985d3
+token: {{token}}
 
 {
-  "assetsSymbol": "BTC"
+  "assetsSymbol": "ETH"
 }
 
