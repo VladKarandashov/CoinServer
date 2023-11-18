@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,7 +26,32 @@ public class BinanceApiService {
     public static final String mainCurrency = "USDT";
     public static final Set<String> wrongSymbolEndSubstrings = Set.of("USD", "BUSD");
 
+    public static final Set<String> BLACK_LIST = Set.of("BCC", "BCHABC", "BCHSV", "NANO", "COCOS", "MCO", "BULL", "BEAR",
+            "ETHBULL", "ETHBEAR", "EOSBULL", "EOSBEAR", "XRPBULL", "XRPBEAR", "BNBBULL", "BNBBEAR", "XZC", "GXS", "REP",
+            "DAI", "XTZDOWN", "TRXDOWN", "DOTDOWN", "LTCDOWN", "HNT", "UNIUP", "UNIDOWN", "SUSHIDOWN", "XLMDOWN", "BTCST",
+            "AUTO", "BTG", "TORN", "RGT", "ANY");
+
     private final BinanceApiRestClient binanceClient;
+
+    private void postConstruct() {
+        var blackList = new LinkedList<String>();
+        getAllPrices().forEach( tickerPrice -> {
+            try {
+                Thread.sleep(500L);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            var symbol = tickerPrice.getSymbol();
+            var statistic = getTickerStatisticsBySymbol(symbol);
+            if (Double.parseDouble(statistic.getLastPrice()) <= 0.5) {
+                log.warn("Монета {} не подходит по стоимости {}", symbol, statistic.getLastPrice());
+                blackList.add(symbol);
+            } else {
+                log.info("Монета {} подходит", symbol);
+            }
+        });
+        log.info("BLACKLIST: {}", blackList);
+    }
 
     @Cacheable(PRICES_CACHE)
     public List<TickerPrice> getAllPrices() {
@@ -35,6 +61,7 @@ public class BinanceApiService {
                 .filter(this::isTickerSymbolNeed)
                 .filter(this::isTickerSymbolNotWrong)
                 .map(this::remakeToCorrectFormat)
+                .filter(ticker -> !BLACK_LIST.contains(ticker.getSymbol()))
                 .collect(Collectors.toList());
     }
 
