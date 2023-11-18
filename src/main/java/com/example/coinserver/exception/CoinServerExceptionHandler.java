@@ -22,7 +22,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class CoinServerExceptionHandler {
 
     @ExceptionHandler(CoinServerException.class)
-    ResponseEntity<GenericResponse<?>> handleCoinServerException(CoinServerException e) {
+    ResponseEntity<GenericResponse> handleCoinServerException(CoinServerException e) {
         log.error("CoinServerException", e);
         int statusCode = e.getStatusCode();
         var response = new GenericResponse<>(statusCode, e.getMessage());
@@ -30,14 +30,14 @@ public class CoinServerExceptionHandler {
     }
 
     @ExceptionHandler({ValidationException.class, MethodArgumentNotValidException.class, ConstraintViolationException.class, DataIntegrityViolationException.class})
-    ResponseEntity<GenericResponse<?>> handleException(ValidationException e) {
+    ResponseEntity<GenericResponse> handleException(ValidationException e) {
         log.error("Validation error", e);
         var response = new GenericResponse<>(1200, "VALIDATION_ERROR");
         return new ResponseEntity<>(response, OK);
     }
 
     @ExceptionHandler(RuntimeException.class)
-    ResponseEntity<GenericResponse<?>> handleException(RuntimeException e) {
+    ResponseEntity<GenericResponse> handleException(RuntimeException e) {
         log.error("Unknown error", e);
         var response = new GenericResponse<>(1000, "UNKNOWN_SERVER_ERROR");
         return new ResponseEntity<>(response, OK);

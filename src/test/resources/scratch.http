@@ -8,13 +8,21 @@ GET http://localhost:8080/api/v1/coins/prices/ETH?interval=3m
 GET http://localhost:8080/api/v1/statistics/leaderboard
 
 ### регистрация
-POST http://localhost:8080/api/v1/auth/registration
+POST http://localhost:8080/api/v1/auth/login
 content-type: application/json
 
 {
   "login": "vlad",
   "password": "qwerty123"
 }
+
+###
+GET http://localhost:8080/api/v1/auth/whoami
+token: {{token}}
+
+###
+POST http://localhost:8080/api/v1/auth/logout
+token: {{token}}
 
 ###
 GET http://localhost:8080/api/v1/balance/assets

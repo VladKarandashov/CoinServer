@@ -54,6 +54,14 @@ public class AuthService {
         return new LoginResponse(token);
     }
 
+    public void logout() {
+        var user = getUser();
+        var token = UUID.randomUUID().toString();
+        user.setLoginDateTime(LocalDateTime.now().minusYears(1));
+        user.setToken(token);
+        userRepository.save(user);
+    }
+
     public LoginResponse registration(LoginRequest request) {
         userRepository.findUserEntityByLogin(request.getLogin())
                 .ifPresent(user -> {

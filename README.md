@@ -239,16 +239,63 @@ Connection: keep-alive
 Токен необходимо запомнить!
 
 
-
-
 #### POST /api/v1/auth/login
 
 Абсолютно тоже самое, что и при регистации. Возможные коды ответов см в начале документа.
+
+#### POST /api/v1/auth/logout
+*Обязательно токен!*
+
+Тела никакого не нужно.
+
+Будет ответ:
+```http request
+```http request
+HTTP/1.1 200 
+Content-Type: application/json
+Transfer-Encoding: chunked
+Date: Sat, 18 Nov 2023 14:32:38 GMT
+Keep-Alive: timeout=60
+Connection: keep-alive
+
+{
+  "statusCode": 0,
+  "message": "SUCCESS",
+  "data": null
+}
+```
+
+После чего будет ошибка WRONG_TOKEN на любой авторизованный запрос.
+
 
 ## API доступны только авторизованным пользователям
 **Обязательно необходим хедер token - в который нужно передать запомненный uuid**
 
 ### Получение информации о пользователе
+
+#### GET /api/v1/auth/whoami
+*Обязательно нужен token*
+Возвращает информацию о пользователе
+```http request
+HTTP/1.1 200 
+Content-Type: application/json
+Transfer-Encoding: chunked
+Date: Sat, 18 Nov 2023 14:32:38 GMT
+Keep-Alive: timeout=60
+Connection: keep-alive
+
+{
+  "statusCode": 0,
+  "message": "SUCCESS",
+  "data": {
+    "id": 3,
+    "login": "vlad",
+    "token": "0940bb3c-96c9-4397-9d9a-8b4b4a3c2586",
+    "money": 99945.0508422455847568747975744093043560000000
+  }
+}
+```
+
 
 #### GET /api/v1/balance
 Возвращает в поле data - оставшиеся доллары на счету
