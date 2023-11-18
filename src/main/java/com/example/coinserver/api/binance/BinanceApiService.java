@@ -31,6 +31,7 @@ public class BinanceApiService {
     public List<TickerPrice> getAllPrices() {
         log.info("запрошена цена всех монет");
         return binanceClient.getAllPrices().stream()
+                .filter(ticker -> Double.parseDouble(ticker.getPrice())>=1)
                 .filter(this::isTickerSymbolNeed)
                 .filter(this::isTickerSymbolNotWrong)
                 .map(this::remakeToCorrectFormat)
