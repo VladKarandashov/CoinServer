@@ -33,7 +33,8 @@ public class OrdersController {
     @GetMapping
     @LoginAdmission
     public GenericResponse<List<OrderResponse>> getAllOrders() {
-        return new GenericResponse<>(0, "SUCCESS", ordersService.getAllOrders().stream()
+        return new GenericResponse<>(0, "SUCCESS", ordersService.getAllOrders()
+                .stream()
                 .map(OrderResponse::new)
                 .collect(Collectors.toList()));
     }
@@ -41,7 +42,8 @@ public class OrdersController {
     @GetMapping("/{symbol}")
     @LoginAdmission
     public GenericResponse<List<OrderResponse>> getOrdersBySymbol(@PathVariable String symbol) {
-        return new GenericResponse<>(0, "SUCCESS", ordersService.getOrdersBySymbol(symbol).stream()
+        return new GenericResponse<>(0, "SUCCESS", ordersService.getOrdersBySymbol(symbol)
+                .stream()
                 .map(OrderResponse::new)
                 .collect(Collectors.toList()));
     }

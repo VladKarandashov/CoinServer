@@ -38,9 +38,13 @@ public class ManageOrdersService {
     public void createBuyOrder(CreateBuyOrderRequest request) {
         var symbol = request.getAssetsSymbol();
         var usdMoneyForCreateOrder = request.getUsdMoney();
+        var user = authService.getUser();
 
         // дополнительная валидация запроса
         if (usdMoneyForCreateOrder.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new CoinServerException(VALIDATION_ERROR_USD);
+        }
+        if (usdMoneyForCreateOrder.compareTo(user.getMoney()) > 0) {
             throw new CoinServerException(VALIDATION_ERROR_USD);
         }
 
@@ -51,7 +55,6 @@ public class ManageOrdersService {
         // сколько пользователь получит ресурсов после покупки?
         var orderAssetsCount = usdMoneyForCreateOrder.divide(assetsPriceForBuy, 32, RoundingMode.FLOOR);
         // какой у пользователя новый баланс?
-        var user = authService.getUser();
         var newUsdMoneyBalance = user.getMoney().subtract(usdMoneyForCreateOrder);
 
         var order = OrderEntity.builder().user(user).assetsSymbol(symbol).assetsCount(orderAssetsCount).money(usdMoneyForCreateOrder.negate()).date(LocalDateTime.now()).build();
