@@ -55,14 +55,14 @@ public class OrdersController {
         return new GenericResponse<>(0, "SUCCESS");
     }
 
-    @PostMapping("/sail")
+    @PostMapping("/sell")
     @LoginAdmission
     public GenericResponse<?> createSellOrder(@Valid @RequestBody CreateSellOrderRequest request) {
         manageOrdersService.createSellOrder(request);
         return new GenericResponse<>(0, "SUCCESS");
     }
 
-    @PostMapping("/sail/all")
+    @PostMapping("/sell/all")
     @LoginAdmission
     public GenericResponse<?> createSellAllOrder(@Valid @RequestBody CreateSellAllOrderRequest request) {
         manageOrdersService.createSellOrder(request);
