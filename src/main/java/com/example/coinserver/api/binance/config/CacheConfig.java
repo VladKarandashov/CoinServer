@@ -14,13 +14,15 @@ import java.util.concurrent.TimeUnit;
 public class CacheConfig {
 
    public final static String PRICES_CACHE = "allPricesCache";
+   public static final int PRICES_CACHE_DURATION = 5;
+
    public final static String TICKER_STATISTICS_BY_SYMBOL_CACHE = "tickerStatisticsBySymbolCache";
    public final static String CANDLESTICK_BARS_BY_SYMBOL_CACHE = "candlestickBarsBySymbolCache";
 
    @Bean
    public Cache allPricesCache() {
       return new CaffeineCache(PRICES_CACHE, Caffeine.newBuilder()
-              .expireAfterWrite(5, TimeUnit.SECONDS)
+              .expireAfterWrite(PRICES_CACHE_DURATION, TimeUnit.SECONDS)
               .build());
    }
 

@@ -4,6 +4,7 @@ import com.binance.api.client.domain.market.TickerPrice;
 import com.binance.api.client.domain.market.TickerStatistics;
 import com.example.coinserver.api.binance.BinanceApiClientService;
 import com.example.coinserver.api.binance.BinanceUtils;
+import com.example.coinserver.api.binance.CoinPricesHolder;
 import com.example.coinserver.api.binance.dto.CandlestickResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,7 @@ public class PricesController {
 
     @GetMapping("/prices")
     public List<TickerPrice> getAllPrices() {
-        return binanceApiClientService.getAllPrices();
+        return CoinPricesHolder.getAllPrices();
     }
 
     @GetMapping("/prices/{symbol}")
