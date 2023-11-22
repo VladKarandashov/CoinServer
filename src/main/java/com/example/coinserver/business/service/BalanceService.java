@@ -1,6 +1,6 @@
 package com.example.coinserver.business.service;
 
-import com.example.coinserver.api.binance.BinanceService;
+import com.example.coinserver.api.binance.CoinPricesHolder;
 import com.example.coinserver.auth.service.AuthService;
 import com.example.coinserver.common.dto.AssetsBalance;
 import com.example.coinserver.common.dto.BalanceInfo;
@@ -27,7 +27,6 @@ public class BalanceService {
 
     private final AuthService authService;
     private final OrdersService ordersService;
-    private final BinanceService binanceService;
 
     public BalanceInfo getBalance() {
         var user = authService.getUser();
@@ -39,10 +38,27 @@ public class BalanceService {
         var assetsBalanceList = getAssetsBalance(user);
         var assetsUsdCost = getUsdAssetsCost(assetsBalanceList);
 
+        var orders = ordersService.getAllOrders(user);
+        var leaveUsdMoney = orders.stream()
+                .map(OrderEntity::getMoney)
+                .filter(money -> money.compareTo(BigDecimal.ZERO) < 0)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        if (leaveUsdMoney.compareTo(BigDecimal.ZERO) == 0) {
+            return new BalanceInfo(user.getMoney(), assetsBalanceList, new ChangeCost(
+                    spentUsd,
+                    assetsUsdCost,
+                    BigDecimal.ZERO
+            ));
+        }
+
+
         return new BalanceInfo(user.getMoney(), assetsBalanceList, new ChangeCost(
                 spentUsd,
                 assetsUsdCost,
-                getChangeCostPercent(spentUsd, assetsUsdCost)
+                spentUsd.add(assetsUsdCost)
+                        .divide(leaveUsdMoney.abs(), 32, RoundingMode.FLOOR)
+                        .multiply(BigDecimal.TEN.multiply(BigDecimal.TEN))
         ));
     }
 
@@ -69,20 +85,30 @@ public class BalanceService {
         var assetsCount = orders.stream()
                 .map(OrderEntity::getAssetsCount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-        var spentUsdMoney = orders.stream()
-                .map(OrderEntity::getMoney)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        var tickerPrice = binanceService.getPriceBySymbol(symbol)
+        var price = CoinPricesHolder.getPriceBySymbol(symbol)
+                .map(tickerPrice -> new BigDecimal(tickerPrice.getPrice()))
                 .orElseThrow(() -> {
                     log.error("Не хватает {}", symbol);
                     return new CoinServerException(NOT_FOUND);
                 });
-        var price = new BigDecimal(tickerPrice.getPrice());
         var usdAssetsCost = assetsCount.multiply(price);
+
+        var incomeUsdMoney = orders.stream()
+                .map(OrderEntity::getMoney)
+                .filter(money -> money.compareTo(BigDecimal.ZERO) > 0)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        var leaveUsdMoney = orders.stream()
+                .map(OrderEntity::getMoney)
+                .filter(money -> money.compareTo(BigDecimal.ZERO) < 0)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        var spentUsdMoney = incomeUsdMoney.add(leaveUsdMoney);
+
         return new AssetsBalance(symbol, assetsCount, new ChangeCost(
                 spentUsdMoney,
                 usdAssetsCost,
-                getChangeCostPercent(spentUsdMoney, usdAssetsCost)
+                spentUsdMoney.add(usdAssetsCost)
+                        .divide(leaveUsdMoney.abs(), 32, RoundingMode.FLOOR)
+                        .multiply(BigDecimal.TEN.multiply(BigDecimal.TEN))
         ));
     }
 
@@ -97,10 +123,6 @@ public class BalanceService {
                 .stream()
                 .map(ordersGroup -> getAssetsBalance(ordersGroup.getKey(), ordersGroup.getValue()))
                 .collect(Collectors.toList());
-    }
-
-    public BigDecimal getSpentUsdMoney() {
-        return getSpentUsdMoney(ordersService.getAllOrders());
     }
 
     public BigDecimal getSpentUsdMoney(UserEntity user) {
@@ -118,15 +140,5 @@ public class BalanceService {
                 .map(AssetsBalance::getChangeCost)
                 .map(ChangeCost::getCostUsd)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
-    public BigDecimal getChangeCostPercent(BigDecimal spentUsd, BigDecimal costUsd) {
-        if (spentUsd.compareTo(BigDecimal.ZERO) == 0) {
-            return BigDecimal.ZERO;
-        }
-        return costUsd
-                .divide(spentUsd, 32, RoundingMode.FLOOR)
-                .subtract(BigDecimal.ONE)
-                .multiply(BigDecimal.TEN.multiply(BigDecimal.TEN));
     }
 }
