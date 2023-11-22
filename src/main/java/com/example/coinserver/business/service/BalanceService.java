@@ -103,6 +103,14 @@ public class BalanceService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         var spentUsdMoney = incomeUsdMoney.add(leaveUsdMoney);
 
+        if (leaveUsdMoney.compareTo(BigDecimal.ZERO) == 0) {
+            return new AssetsBalance(symbol, assetsCount, new ChangeCost(
+                    spentUsdMoney,
+                    usdAssetsCost,
+                    BigDecimal.ZERO
+            ));
+        }
+
         return new AssetsBalance(symbol, assetsCount, new ChangeCost(
                 spentUsdMoney,
                 usdAssetsCost,
