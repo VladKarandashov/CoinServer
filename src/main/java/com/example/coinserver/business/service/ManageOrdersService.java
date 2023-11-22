@@ -12,8 +12,6 @@ import com.example.coinserver.exception.CoinServerException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -34,7 +32,7 @@ public class ManageOrdersService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
 
-    @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void createBuyOrder(CreateBuyOrderRequest request) {
         var symbol = request.getAssetsSymbol();
         var usdMoneyForCreateOrder = request.getUsdMoney();
@@ -63,7 +61,7 @@ public class ManageOrdersService {
         userRepository.save(user);
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void createSellOrder(CreateSellOrderRequest request) {
         var symbol = request.getAssetsSymbol();
         var assetsCountForSail = request.getAssetsCount();
@@ -96,7 +94,7 @@ public class ManageOrdersService {
         userRepository.save(user);
     }
 
-    @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     public void createSellOrder(CreateSellAllOrderRequest request) {
         var symbol = request.getAssetsSymbol();
         var balance = balanceService.getAssetsBalance(symbol);
