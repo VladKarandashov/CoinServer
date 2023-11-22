@@ -73,7 +73,10 @@ public class BalanceService {
                 .map(OrderEntity::getMoney)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         var tickerPrice = binanceService.getPriceBySymbol(symbol)
-                .orElseThrow(() -> new CoinServerException(NOT_FOUND));
+                .orElseThrow(() -> {
+                    log.error("Не хватает {}", symbol);
+                    return new CoinServerException(NOT_FOUND);
+                });
         var price = new BigDecimal(tickerPrice.getPrice());
         var usdAssetsCost = assetsCount.multiply(price);
         return new AssetsBalance(symbol, assetsCount, new ChangeCost(

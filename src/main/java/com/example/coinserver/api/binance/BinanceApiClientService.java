@@ -29,7 +29,7 @@ public class BinanceApiClientService {
     public static final Set<String> BLACK_LIST = Set.of("BCC", "BCHABC", "BCHSV", "NANO", "COCOS", "MCO", "BULL", "BEAR",
             "ETHBULL", "ETHBEAR", "EOSBULL", "EOSBEAR", "XRPBULL", "XRPBEAR", "BNBBULL", "BNBBEAR", "XZC", "GXS", "REP",
             "DAI", "XTZDOWN", "TRXDOWN", "DOTDOWN", "LTCDOWN", "HNT", "UNIUP", "UNIDOWN", "SUSHIDOWN", "XLMDOWN", "BTCST",
-            "AUTO", "BTG", "TORN", "RGT", "ANY");
+            "AUTO", "BTG", "TORN", "RGT", "ANY", "ARB");
 
     private final BinanceApiRestClient binanceClient;
 
