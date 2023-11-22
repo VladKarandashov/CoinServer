@@ -17,7 +17,7 @@ sleep 3
 echo "Запускаем приложение"
 # Запускаем новую сессию tmux в фоновом режиме
 # shellcheck disable=SC2016
-tmux new-session -d -s my-session './mvnw spring-boot:run > "$(date +'%Y-%m-%d%H-%M-%S').log"'
+tmux new-session -d -s my-session './mvnw spring-boot:run > "$(date +'%Y-%m-%d-%H-%M-%S').log"'
 # Отображаем список сессий tmux
 sleep 3
 tmux list-sessions

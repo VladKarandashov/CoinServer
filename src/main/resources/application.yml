@@ -8,7 +8,7 @@ spring:
     enabled: true
     changeLog: classpath:db/changelog/db.changelog-master.xml
   jpa:
-    showSql: true
+    showSql: false
     hibernate:
       ddl-auto: validate
     properties:
