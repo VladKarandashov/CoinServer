@@ -2,9 +2,9 @@ package com.example.coinserver.business.controller;
 
 import com.binance.api.client.domain.market.TickerPrice;
 import com.binance.api.client.domain.market.TickerStatistics;
-import com.example.coinserver.api.binance.BinanceApiService;
+import com.example.coinserver.api.binance.BinanceApiClientService;
 import com.example.coinserver.api.binance.BinanceUtils;
-import com.example.coinserver.api.binance.CandlestickResponse;
+import com.example.coinserver.api.binance.dto.CandlestickResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,11 +21,11 @@ import java.util.List;
 @RequestMapping("/api/v1/coins")
 public class PricesController {
 
-    private final BinanceApiService binanceApiService;
+    private final BinanceApiClientService binanceApiClientService;
 
     @GetMapping("/prices")
     public List<TickerPrice> getAllPrices() {
-        return binanceApiService.getAllPrices();
+        return binanceApiClientService.getAllPrices();
     }
 
     @GetMapping("/prices/{symbol}")
@@ -33,12 +33,12 @@ public class PricesController {
             @PathVariable("symbol") String symbol,
             @RequestParam(required = false, defaultValue = "3d")
             String interval) {
-        return binanceApiService.getCandlestickBarsBySymbol(
+        return binanceApiClientService.getCandlestickBarsBySymbol(
                 BinanceUtils.getCandlestickIntervalByString(interval), symbol);
     }
 
     @GetMapping("/statistics/{symbol}")
     public TickerStatistics getAllPrices(@PathVariable("symbol") String symbol) {
-        return binanceApiService.getTickerStatisticsBySymbol(symbol);
+        return binanceApiClientService.getTickerStatisticsBySymbol(symbol);
     }
 }

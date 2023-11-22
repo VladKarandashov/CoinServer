@@ -1,4 +1,4 @@
-package com.example.coinserver.api.binance;
+package com.example.coinserver.api.binance.config;
 
 import lombok.Getter;
 import lombok.Setter;

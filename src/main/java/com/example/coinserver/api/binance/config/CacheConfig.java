@@ -1,4 +1,4 @@
-package com.example.coinserver.api.cache;
+package com.example.coinserver.api.binance.config;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.cache.Cache;

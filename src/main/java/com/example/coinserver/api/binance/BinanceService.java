@@ -10,10 +10,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BinanceService {
 
-    private final BinanceApiService binanceApiService;
+    private final BinanceApiClientService binanceApiClientService;
 
     public Optional<TickerPrice> getPriceBySymbol(String symbol) {
-        return binanceApiService.getAllPrices().stream()
+        return binanceApiClientService.getAllPrices().stream()
                 .filter(price -> symbol.equalsIgnoreCase(price.getSymbol()))
                 .findFirst();
     }

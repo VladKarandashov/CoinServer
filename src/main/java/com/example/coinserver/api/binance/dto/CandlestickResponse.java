@@ -1,4 +1,4 @@
-package com.example.coinserver.api.binance;
+package com.example.coinserver.api.binance.dto;
 
 import com.binance.api.client.domain.market.Candlestick;
 import lombok.AllArgsConstructor;

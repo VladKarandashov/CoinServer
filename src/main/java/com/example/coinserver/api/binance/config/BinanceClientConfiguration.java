@@ -1,4 +1,4 @@
-package com.example.coinserver.api.binance;
+package com.example.coinserver.api.binance.config;
 
 import com.binance.api.client.BinanceApiClientFactory;
 import com.binance.api.client.BinanceApiRestClient;
