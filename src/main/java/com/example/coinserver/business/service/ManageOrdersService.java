@@ -1,6 +1,6 @@
 package com.example.coinserver.business.service;
 
-import com.example.coinserver.api.binance.BinanceService;
+import com.example.coinserver.api.binance.CoinPricesHolder;
 import com.example.coinserver.auth.service.AuthService;
 import com.example.coinserver.common.request.CreateBuyOrderRequest;
 import com.example.coinserver.common.request.CreateSellAllOrderRequest;
@@ -25,7 +25,6 @@ import static com.example.coinserver.exception.ExceptionBasis.*;
 @RequiredArgsConstructor
 public class ManageOrdersService {
 
-    private final BinanceService binanceService;
     private final AuthService authService;
     private final BalanceService balanceService;
 
@@ -47,7 +46,7 @@ public class ManageOrdersService {
         }
 
         // по какой цене покупаем?
-        var tickerPrice = binanceService.getPriceBySymbol(symbol).orElseThrow(() -> new CoinServerException(NOT_FOUND));
+        var tickerPrice = CoinPricesHolder.getPriceBySymbol(symbol).orElseThrow(() -> new CoinServerException(NOT_FOUND));
         var assetsPriceForBuy = new BigDecimal(tickerPrice.getPrice());
 
         // сколько пользователь получит ресурсов после покупки?
@@ -80,7 +79,7 @@ public class ManageOrdersService {
         }
 
         // по какой цене продаём?
-        var tickerPrice = binanceService.getPriceBySymbol(symbol).orElseThrow(() -> new CoinServerException(NOT_FOUND));
+        var tickerPrice = CoinPricesHolder.getPriceBySymbol(symbol).orElseThrow(() -> new CoinServerException(NOT_FOUND));
         var assetsPriceForSail = new BigDecimal(tickerPrice.getPrice());
 
         // сколько пользователь получит денег после продажи?
