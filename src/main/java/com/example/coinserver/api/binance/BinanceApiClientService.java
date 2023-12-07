@@ -33,26 +33,6 @@ public class BinanceApiClientService {
 
     private final BinanceApiRestClient binanceClient;
 
-//    private void postConstruct() {
-//        var blackList = new LinkedList<String>();
-//        getAllPrices().forEach( tickerPrice -> {
-//            try {
-//                Thread.sleep(500L);
-//            } catch (InterruptedException e) {
-//                throw new RuntimeException(e);
-//            }
-//            var symbol = tickerPrice.getSymbol();
-//            var statistic = getTickerStatisticsBySymbol(symbol);
-//            if (Double.parseDouble(statistic.getLastPrice()) <= 0.5) {
-//                log.warn("Монета {} не подходит по стоимости {}", symbol, statistic.getLastPrice());
-//                blackList.add(symbol);
-//            } else {
-//                log.info("Монета {} подходит", symbol);
-//            }
-//        });
-//        log.info("BLACKLIST: {}", blackList);
-//    }
-
     @Cacheable(PRICES_CACHE)
     public List<TickerPrice> getAllPrices() {
         return binanceClient.getAllPrices().stream()
