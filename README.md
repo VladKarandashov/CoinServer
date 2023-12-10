@@ -1,5 +1,9 @@
 # CoinServer
 
+## Общая схема приложения
+
+![components.png](components.png)
+
 ## Возможные ошибки
 
 ```java
